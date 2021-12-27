@@ -1,0 +1,10 @@
+dynaconf_merge: true
+
+DEVELOPMENT:
+  TEST_VAR: ''
+
+STAGING:
+  TEST_VAR: ''
+
+PRODUCTION:
+  TEST_VAR: ''

@@ -1,0 +1,28 @@
+## For GPU
+#[[source]]
+#name = "pytorch"
+#url = "https://download.pytorch.org/whl/cu113"
+#verify_ssl = false
+
+# For CPU
+[[source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+verify_ssl = false
+
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+torchvision = { index = "pytorch", version = "==0.11.2" }
+torch = { index = "pytorch", version = "==1.10.1" }
+numpy = "*"
+dynaconf = "*"
+tqdm = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
