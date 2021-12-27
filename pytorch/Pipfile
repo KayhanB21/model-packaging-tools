@@ -3,8 +3,8 @@
 #name = "pytorch"
 #url = "https://download.pytorch.org/whl/cu113"
 #verify_ssl = false
-
 # For CPU
+
 [[source]]
 name = "pytorch"
 url = "https://download.pytorch.org/whl/cpu"
@@ -23,6 +23,7 @@ dynaconf = "*"
 tqdm = "*"
 
 [dev-packages]
+onnxruntime = "*"
 
 [requires]
 python_version = "3.8"

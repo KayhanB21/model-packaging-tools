@@ -56,8 +56,8 @@ class MNISTClassifierNet:
         drop_1 = layers.Dropout(rate = 0.5)(fc_1)
         fc_2 = layers.Dense(units = 50, activation = "relu")(drop_1)
         drop_2 = layers.Dropout(rate = 0.5)(fc_2)
-        outputs = layers.Dense(units = 10, activation = "softmax")(drop_2)
-        self.model = keras.Model(inputs = inputs, outputs = outputs)
+        fc_3 = layers.Dense(units = 10, activation = "softmax")(drop_2)
+        self.model = keras.Model(inputs = inputs, outputs = fc_3)
 
     def get_model(self):
         return self.model
@@ -99,7 +99,7 @@ with tf.device("cpu:0"):
     val_acc_metric.reset_states()
 
     print(f"validation accuracy % = {val_acc * 100 :.3f}")
-    
+
     # training loop
     for epoch in range(settings.training_setting.max_epoch_count):
         print(f"Epoch: {epoch + 1}")
