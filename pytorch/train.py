@@ -37,12 +37,12 @@ train_loader = torch.utils.data.DataLoader(dataset = torchvision.datasets.MNIST(
                                            batch_size = settings.training_setting.train_batch_size,
                                            shuffle = True)
 
-test_loader = torch.utils.data.DataLoader(dataset = torchvision.datasets.MNIST('./dataset/mnist/',
-                                                                               train = False,
-                                                                               download = True,
-                                                                               transform = transform),
-                                          batch_size = settings.training_setting.test_batch_size,
-                                          shuffle = False)
+val_loader = torch.utils.data.DataLoader(dataset = torchvision.datasets.MNIST('./dataset/mnist/',
+                                                                              train = False,
+                                                                              download = True,
+                                                                              transform = transform),
+                                         batch_size = settings.training_setting.test_batch_size,
+                                         shuffle = False)
 
 
 class MNISTClassifierNet(nn.Module):
@@ -100,16 +100,16 @@ def validation():
     negative = 0
 
     with torch.no_grad():
-        for data, label in test_loader:
+        for data, label in val_loader:
             prediction = net(data)
             loss = criterion(prediction, label).item() * data.size(0)
             positive += torch.sum(torch.argmax(prediction, dim = 1) == label)
             negative += torch.sum(torch.argmax(prediction, dim = 1) != label)
 
     print(f"Validation, "
-          f"Average loss = {loss / len(test_loader.dataset):.4f}, "
-          f"Positive cases = {positive}/{len(test_loader.dataset)},"
-          f"Negative case = {negative}/{len(test_loader.dataset)}, "
+          f"Average loss = {loss / len(val_loader.dataset):.4f}, "
+          f"Positive cases = {positive}/{len(val_loader.dataset)},"
+          f"Negative case = {negative}/{len(val_loader.dataset)}, "
           f'validation accuracy % = {positive / (positive + negative) * 100:0.3f}')
 
 
