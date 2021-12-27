@@ -23,11 +23,13 @@ def to_numpy(tensor):
 
 positive = 0
 negative = 0
+
 for data, label in val_loader:
     ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(data)}
     ort_outs = ort_session.run(None, ort_inputs)
     positive += np.sum(np.argmax(ort_outs[0], axis = 1) == to_numpy(label))
     negative += np.sum(np.argmax(ort_outs[0], axis = 1) != to_numpy(label))
-print(f"Positive cases = {positive}/{len(val_loader.dataset)},"
+
+print(f"Positive cases = {positive}/{len(val_loader.dataset)}, "
       f"Negative case = {negative}/{len(val_loader.dataset)}, "
       f'validation accuracy % = {positive / (positive + negative) * 100:0.3f}')

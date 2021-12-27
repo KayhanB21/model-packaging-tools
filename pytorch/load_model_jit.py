@@ -14,12 +14,16 @@ val_loader = torch.utils.data.DataLoader(dataset = torchvision.datasets.MNIST('.
 
 loaded_trace = torch.jit.load("./model/epoch_checkpoint_jit.pt")
 with torch.no_grad():
+    loaded_trace.eval()
+
     positive = 0
     negative = 0
+
     for data, label in val_loader:
         prediction = loaded_trace(data)
         positive += torch.sum(torch.argmax(prediction, dim = 1) == label)
         negative += torch.sum(torch.argmax(prediction, dim = 1) != label)
-    print(f"Positive cases = {positive}/{len(val_loader.dataset)},"
+
+    print(f"Positive cases = {positive}/{len(val_loader.dataset)}, "
           f"Negative case = {negative}/{len(val_loader.dataset)}, "
           f'validation accuracy % = {positive / (positive + negative) * 100:0.3f}')

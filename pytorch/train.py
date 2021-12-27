@@ -108,7 +108,7 @@ def validation():
 
     print(f"Validation, "
           f"Average loss = {loss / len(val_loader.dataset):.4f}, "
-          f"Positive cases = {positive}/{len(val_loader.dataset)},"
+          f"Positive cases = {positive}/{len(val_loader.dataset)}, "
           f"Negative case = {negative}/{len(val_loader.dataset)}, "
           f'validation accuracy % = {positive / (positive + negative) * 100:0.3f}')
 
