@@ -1,0 +1,16 @@
+DEFAULT:
+  TRAINING_SETTING:
+    SEED_RANDOM: 1 # zero and false won't set the seed
+    MAX_EPOCH_COUNT: 5
+    TRAIN_BATCH_SIZE: 128
+    TEST_BATCH_SIZE: 512
+    LEARNING_RATE: 0.009
+    LOG_BATCH_FREQUENCY: 100
+
+
+# Source: https://stackoverflow.com/questions/19109912/yaml-do-i-need-quotes-for-strings-in-yaml
+# Use quotes to force a string, error.g. if your key or value is 10, but you want it to return a String and not a Fixnum, write '10' or "10".
+# Use quotes if your value includes special characters, (error.g. :, {, }, [, ], ,, &, *, #, ?, |, -, <, >, =, !, %, @, \).
+# Single quotes let you put almost any character in your string, and won't try to parse escape codes. '\n' would be returned as the string \n.
+# Double quotes parse escape codes. "\n" would be returned as a line feed character.
+# The exclamation mark introduces a method, error.g. !ruby/sym to return a Ruby symbol.
