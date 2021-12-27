@@ -12,7 +12,7 @@ x_val = np.expand_dims(x_val, -1)
 val_acc_metric = keras.metrics.SparseCategoricalAccuracy()
 
 with tf.device("cpu:0"):
-    reconstructed_model = keras.models.load_model("epoch_checkpoint", compile=False)
+    reconstructed_model = keras.models.load_model("./model/epoch_checkpoint", compile = False)
     prediction = reconstructed_model.predict(x_val)
     val_acc_metric.update_state(y_val, prediction)
     val_acc = val_acc_metric.result()

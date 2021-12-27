@@ -10,6 +10,7 @@ from tensorflow.keras import layers
 from tqdm import tqdm
 
 
+# to force using cpu add CUDA_VISIBLE_DEVICES="" to env variables
 def seed_everything(seed: int = 42) -> None:
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -73,24 +74,23 @@ print(f"Learning rate is: {settings.training_setting.learning_rate}")
 loss_fn = keras.losses.SparseCategoricalCrossentropy(reduction = 'sum')
 val_acc_metric = keras.metrics.SparseCategoricalAccuracy()
 
-
-@tf.function
-def train_step(data, label):
-    with tf.GradientTape() as tape:
-        prediction = net(data, training = True)
-        loss_value = loss_fn(y_true = label, y_pred = prediction)
-    grads = tape.gradient(loss_value, net.trainable_weights)
-    optimizer.apply_gradients(zip(grads, net.trainable_weights))
-    return loss_value
-
-
-@tf.function
-def valid_step(data, label):
-    prediction = net(data, training = False)
-    val_acc_metric.update_state(label, prediction)
-
-
 with tf.device("cpu:0"):
+    @tf.function(jit_compile = True)
+    def train_step(data, label):
+        with tf.GradientTape() as tape:
+            prediction = net(data, training = True)
+            loss_value = loss_fn(y_true = label, y_pred = prediction)
+        grads = tape.gradient(loss_value, net.trainable_weights)
+        optimizer.apply_gradients(zip(grads, net.trainable_weights))
+        return loss_value
+
+
+    @tf.function(jit_compile = True)
+    def valid_step(data, label):
+        prediction = net(data, training = False)
+        val_acc_metric.update_state(label, prediction)
+
+
     # initial evaluation
     for batch_id, (data, label) in enumerate(val_loader):
         valid_step(data = data, label = label)
@@ -125,4 +125,13 @@ with tf.device("cpu:0"):
         val_acc_metric.reset_states()
 
         print(f"validation accuracy % = {val_acc * 100 :.3f}")
-        net.save("epoch_checkpoint")
+        net.save("./model/epoch_checkpoint")
+
+        # saving tflite
+        converter = tf.lite.TFLiteConverter.from_saved_model("./model/epoch_checkpoint")
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
+        converter.target_spec.supported_types = [tf.float16]
+
+        tflite_model = converter.convert()
+        with open('./model/epoch_checkpoint.tflite', 'wb') as f:
+            f.write(tflite_model)
