@@ -65,7 +65,7 @@ print(f"Learning rate is: {settings.training_setting.learning_rate}")
 # please use CategoricalCrossentropy loss,
 # y_train = keras.utils.to_categorical(y_train, num_classes)
 
-loss_fn = keras.losses.SparseCategoricalCrossentropy()
+loss_fn = keras.losses.SparseCategoricalCrossentropy(reduction = 'sum')
 
 train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 train_loader = train_loader.shuffle(buffer_size = settings.training_setting.train_batch_size * 10).batch(settings.training_setting.train_batch_size)
@@ -74,18 +74,39 @@ val_loader = val_loader.batch(settings.training_setting.test_batch_size)
 
 val_acc_metric = keras.metrics.SparseCategoricalAccuracy()
 
+
+@tf.function
+def train_step(data, label):
+    with tf.GradientTape() as tape:
+        prediction = net(data, training = True)
+        loss_value = loss_fn(y_true = label, y_pred = prediction)
+    grads = tape.gradient(loss_value, net.trainable_weights)
+    optimizer.apply_gradients(zip(grads, net.trainable_weights))
+    return loss_value
+
+
+@tf.function
+def valid_step(data, label):
+    prediction = net(data, training = False)
+    val_acc_metric.update_state(label, prediction)
+
+
 with tf.device("cpu:0"):
+    for batch_id, (data, label) in enumerate(val_loader):
+        if batch_id == 0:
+            net.build(data)
+        valid_step(data = data, label = label)
+    val_acc = val_acc_metric.result()
+    val_acc_metric.reset_states()
+
+    print(f"validation accuracy % = {val_acc * 100 :.3f}")
     for epoch in range(settings.training_setting.max_epoch_count):
         print(f"Epoch: {epoch + 1}")
         train_loss = 0
         data_size_counter = 0
 
         for batch_id, (data, label) in enumerate(tqdm(train_loader)):
-            with tf.GradientTape() as tape:
-                prediction = net(data, training = True)
-                loss_value = loss_fn(label, prediction)
-            grads = tape.gradient(loss_value, net.trainable_weights)
-            optimizer.apply_gradients(zip(grads, net.trainable_weights))
+            loss_value = train_step(data = data, label = label)
             train_loss += loss_value
             data_size_counter += len(data)
 
@@ -97,9 +118,8 @@ with tf.device("cpu:0"):
               f"Average loss = {train_loss / data_size_counter:.4f}")
 
         for data, label in val_loader:
-            prediction = net(data, training = False)
-            val_acc_metric.update_state(label, prediction)
-
+            valid_step(data = data, label = label)
         val_acc = val_acc_metric.result()
         val_acc_metric.reset_states()
         print(f"validation accuracy % = {val_acc * 100 :.3f}")
+        net.save("epoch_checkpoint")
