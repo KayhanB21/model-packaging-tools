@@ -1,0 +1,5 @@
+http://localhost:8501/v1/models/mnist/versions/1:predict
+http://localhost:8501/v1/models/mnist/versions/2:predict
+http://localhost:8501/v1/models/mnist/labels/stable:predict
+http://localhost:8501/v1/models/mnist/labels/canary:predict
+http://localhost:8501/v1/models/mnist:predict

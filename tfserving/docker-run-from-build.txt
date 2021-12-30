@@ -1,0 +1,1 @@
+docker run -t --rm -p 8501:8501 -p 8500:8500 -v -t serving1 --model_config_file=/models/models.config --model_config_file_poll_wait_seconds=60 --allow_version_labels_for_unavailable_models=true
