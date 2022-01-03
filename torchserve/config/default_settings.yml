@@ -1,0 +1,15 @@
+DEFAULT:
+  TORCH_SERVE:
+    MODEL_NAME: MNIST_CLASSIFIER
+    VERSION: 1.0
+    MODEL_FILE_PATH: ./model/epoch_checkpoint.pt
+    EXPORT_PATH: ./export/
+    HANDLER_PATH: ./base_handler.py
+
+
+# Source: https://stackoverflow.com/questions/19109912/yaml-do-i-need-quotes-for-strings-in-yaml
+# Use quotes to force a string, error.g. if your key or value is 10, but you want it to return a String and not a Fixnum, write '10' or "10".
+# Use quotes if your value includes special characters, (error.g. :, {, }, [, ], ,, &, *, #, ?, |, -, <, >, =, !, %, @, \).
+# Single quotes let you put almost any character in your string, and won't try to parse escape codes. '\n' would be returned as the string \n.
+# Double quotes parse escape codes. "\n" would be returned as a line feed character.
+# The exclamation mark introduces a method, error.g. !ruby/sym to return a Ruby symbol.
